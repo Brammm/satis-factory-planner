@@ -1,10 +1,11 @@
-import {ulid} from 'ulid';
-import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
-import {immer} from 'zustand/middleware/immer';
+import { ulid } from 'ulid';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
 
-import {Branded} from '../util/Branded.ts';
-import {Item} from './item.ts';
+import type { WritableDraft } from 'immer';
+import type { Branded } from '../util/Branded.ts';
+import type { Item } from './item.ts';
 
 type FactoryId = Branded<string, 'FactoryId'>;
 type ModuleId = Branded<string, 'ModuleId'>;
@@ -22,8 +23,8 @@ type Factory = {
 
 type Module = {
     id: ModuleId;
-    item: Item,
-    amount: number,
+    item: Item;
+    amount: number;
     input: [Item, number][];
 };
 
@@ -53,50 +54,67 @@ const defaultState: State = {
     ],
 };
 
-export const usePlanner = create<State & Actions>()(persist(
-    immer((set) => ({
-        ...defaultState,
-        addFactory: () => {
-            const newId = createFactoryId();
-            set((state) => {
-                state.factories.push({
-                    id: newId,
-                    name: 'New Factory',
-                    output: [],
-                    modules: [],
+function onActiveFactory(
+    factories: WritableDraft<Factory>[],
+    factoryId: FactoryId,
+    handler: (factory: Factory) => void,
+) {
+    const activeFactory = factories.find((factory) => factory.id === factoryId);
+    if (!activeFactory) return;
+
+    handler(activeFactory);
+}
+
+export const usePlanner = create<State & Actions>()(
+    persist(
+        immer((set) => ({
+            ...defaultState,
+            addFactory: () => {
+                const newId = createFactoryId();
+                set((state) => {
+                    state.factories.push({
+                        id: newId,
+                        name: 'New Factory',
+                        output: [],
+                        modules: [],
+                    });
+                    state.activeFactoryId = newId;
                 });
-                state.activeFactoryId = newId;
-            });
-        },
-        navigateToFactory: (factoryId) => {
-            set((state) => {
-                state.activeFactoryId = factoryId;
-            });
-        },
-        renameFactory: (factoryId, name) => {
-            set((state) => {
-                const activeFactory = state.factories.find((factory) => factory.id === factoryId)!;
-                activeFactory.name = name;
-            });
-        },
-        deleteFactory: (factoryId) => {
-            set((state) => {
-                state.factories = state.factories.filter((factory) => factory.id !== factoryId);
-                if (state.factories.length === 0) {
-                    state.factories = defaultState.factories;
-                    state.activeFactoryId = defaultFactoryId;
-                }
-                if (factoryId === state.activeFactoryId) {
-                    state.activeFactoryId = state.factories[0].id;
-                }
-            });
-        },
-        changeOutput: (factoryId, output) => {
-            set((state) => {
-                const activeFactory = state.factories.find((factory) => factory.id === factoryId)!;
-                activeFactory.output = output;
-            });
-        },
-    })),
-    {name: 'satis-factory-planner', version: 1}),
+            },
+            navigateToFactory: (factoryId) => {
+                set((state) => {
+                    state.activeFactoryId = factoryId;
+                });
+            },
+            renameFactory: (factoryId, name) => {
+                set((state) => {
+                    onActiveFactory(state.factories, factoryId, (factory) => {
+                        factory.name = name;
+                    });
+                });
+            },
+            deleteFactory: (factoryId) => {
+                set((state) => {
+                    state.factories = state.factories.filter(
+                        (factory) => factory.id !== factoryId,
+                    );
+                    if (state.factories.length === 0) {
+                        state.factories = defaultState.factories;
+                        state.activeFactoryId = defaultFactoryId;
+                    }
+                    if (factoryId === state.activeFactoryId) {
+                        state.activeFactoryId = state.factories[0].id;
+                    }
+                });
+            },
+            changeOutput: (factoryId, output) => {
+                set((state) => {
+                    onActiveFactory(state.factories, factoryId, (factory) => {
+                        factory.output = output;
+                    });
+                });
+            },
+        })),
+        { name: 'satis-factory-planner', version: 1 },
+    ),
 );

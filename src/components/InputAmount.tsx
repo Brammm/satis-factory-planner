@@ -1,17 +1,22 @@
-import {ChangeEvent} from 'react';
+import type { ChangeEvent } from 'react';
 
 type Props = {
     value: number;
     onChange: (amount: number) => void;
 };
 
-export default function InputAmount({onChange, value}: Props) {
+export default function InputAmount({ onChange, value }: Props) {
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const selectedItem = e.currentTarget.value;
-        onChange(parseFloat(selectedItem));
-    }
-    
+        onChange(Number.parseFloat(selectedItem));
+    };
+
     return (
-        <input type="number" value={value} onChange={handleChange} className="text-secondary" />
+        <input
+            type="number"
+            value={value}
+            onChange={handleChange}
+            className="text-secondary"
+        />
     );
 }

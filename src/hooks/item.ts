@@ -6,8 +6,10 @@ export const items = [
     'CONCRETE',
     'RUBBER',
     'SMART_PLATING',
+    'MODULAR_ENGINE',
     'VERSATILE_FRAMEWORK',
     'AUTOMATED_WIRING',
+    'ADAPTIVE_CONTROL_UNIT',
     'HEAVY_MODULAR_FRAME',
     'ENCASED_INDUSTRIAL_BEAM',
     'MODULAR_FRAME',
@@ -22,4 +24,4 @@ export const items = [
     'COMPUTER',
 ] as const;
 
-export type Item = typeof items[number];
+export type Item = (typeof items)[number];
