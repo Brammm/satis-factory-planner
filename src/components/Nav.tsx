@@ -20,8 +20,8 @@ type NavItemProps = {
 };
 export function NavItem({active = false, children, onClick}: NavItemProps) {
     return (
-        <li className={clsx(active ? 'bg-primary' : 'bg-tertiary', 'p-2')}>
-            <button onClick={onClick}>{children}</button>
+        <li className={clsx(active ? 'bg-primary' : 'bg-tertiary')}>
+            <button className="p-2" onClick={onClick}>{children}</button>
         </li>
     );
 }
