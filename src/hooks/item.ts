@@ -1,4 +1,4 @@
-const items = [
+export const items = [
     'IRON_INGOT',
     'COPPER_INGOT',
     'CATERIUM_INGOT',

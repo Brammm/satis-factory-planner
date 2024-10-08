@@ -16,7 +16,7 @@ function createFactoryId(): FactoryId {
 type Factory = {
     id: FactoryId;
     name: string;
-    output: Partial<Record<Item, number>>;
+    output: [Item, number][];
     modules: Module[];
 };
 
@@ -24,7 +24,7 @@ type Module = {
     id: ModuleId;
     item: Item,
     amount: number,
-    input: Partial<Record<Item, number>>;
+    input: [Item, number][];
 };
 
 type State = {
@@ -37,6 +37,7 @@ type Actions = {
     navigateToFactory: (factoryId: FactoryId) => void;
     renameFactory: (factoryId: FactoryId, name: string) => void;
     deleteFactory: (factoryId: FactoryId) => void;
+    changeOutput: (factoryId: FactoryId, output: [Item, number][]) => void;
 };
 
 const defaultFactoryId = createFactoryId();
@@ -46,7 +47,7 @@ const defaultState: State = {
         {
             id: defaultFactoryId,
             name: 'New Factory',
-            output: {},
+            output: [],
             modules: [],
         },
     ],
@@ -61,7 +62,7 @@ export const usePlanner = create<State & Actions>()(persist(
                 state.factories.push({
                     id: newId,
                     name: 'New Factory',
-                    output: {},
+                    output: [],
                     modules: [],
                 });
                 state.activeFactoryId = newId;
@@ -88,6 +89,12 @@ export const usePlanner = create<State & Actions>()(persist(
                 if (factoryId === state.activeFactoryId) {
                     state.activeFactoryId = state.factories[0].id;
                 }
+            });
+        },
+        changeOutput: (factoryId, output) => {
+            set((state) => {
+                const activeFactory = state.factories.find((factory) => factory.id === factoryId)!;
+                activeFactory.output = output;
             });
         },
     })),
