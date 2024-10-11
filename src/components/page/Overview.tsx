@@ -48,38 +48,77 @@ export default function Overview() {
         parseProduction(module.item, difference);
     }
 
+    const factoryOverview = factories.map((factory) => {
+        const modules = factory.modules.map((module) => {
+            const moduleCount = production[module.item] / module.amount;
+            
+            return {
+                id: module.id,
+                item: module.item,
+                count: moduleCount,
+                input: module.input.map(([item, amount]) => [
+                    item,
+                    amount * moduleCount,
+                ]),
+            };
+        });
+        
+        const baseInput = modules.reduce<Partial<Record<Item, number>>>((baseInput, module) => {
+            for (const [item, amount] of module.input) {
+                if (allModules.find((module) => module.item === item)) continue;
+                
+                baseInput[item as Item] = (baseInput[item as Item] || 0) + (amount as number);
+            }
+            
+            return baseInput;
+        }, {});
+
+        return {
+            id: factory.id,
+            name: factory.name,
+            modules,
+            baseInput,
+        };
+    });
+
     return (
         <Layout header={<Title>Overview</Title>}>
             <Title type="sub">Factory overview</Title>
-            {factories.map((factory) => (
-                <Fragment key={factory.id}>
-                    <Title type="small">{factory.name}</Title>
-                    <div className="grid grid-cols-3">
+            <div className="inline-grid grid-cols-3">
+                {factoryOverview.map((factory) => (
+                    <Fragment key={factory.id}>
+                        <div className="col-span-3 my-4">
+                            <Title type="small">{factory.name}</Title>
+                        </div>
                         {factory.modules.map((module) => (
                             <Fragment key={module.id}>
-                                <div>{legible(module.item)}</div>
-                                <div>
-                                    {production[module.item] / module.amount}
+                                <div className="border-b">{legible(module.item)}</div>
+                                <div className="border-b">
+                                    {module.count}
                                 </div>
-                                <div>
+                                <div className="border-b">
                                     <ul>
                                         {module.input.map(([item, amount]) => (
                                             <li key={module.id + item}>
-                                                {legible(item)}:{' '}
-                                                {(amount *
-                                                    production[module.item]) /
-                                                    module.amount}
+                                                {legible(item as string)}:{' '}
+                                                {amount}
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
                             </Fragment>
                         ))}
-                    </div>
-                </Fragment>
-            ))}
+                        <span>Total input:</span>
+                        <ul className="col-span-2">
+                            {Object.entries(factory.baseInput).map(([item, amount]) => (
+                                <li key={item}>{legible(item)}: {amount}</li>
+                            ))}
+                        </ul>
+                    </Fragment>
+                ))}
+            </div>
             <Title type="sub">Total required production</Title>
-            <div className="grid grid-cols-2">
+            <div className="inline-grid grid-cols-2">
                 {Object.entries(production).map(([item, amount]) => (
                     <Fragment key={item}>
                         <span key={`item-${item}`}>{legible(item)}</span>
