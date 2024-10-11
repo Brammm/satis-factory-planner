@@ -36,9 +36,9 @@ export default function Layout({ children, header }: Props) {
                 ))}
                 <NavItem onClick={addFactory}>Add new</NavItem>
             </Nav>
-            <div className="bg-primary p-2 flex gap-x-2">{header}</div>
+            <div className="bg-primary p-4 flex gap-x-2">{header}</div>
 
-            <div className="bg-tertiary p-2">{children}</div>
+            <div className="border border-t-0 border-tertiary p-8">{children}</div>
         </main>
     );
 }

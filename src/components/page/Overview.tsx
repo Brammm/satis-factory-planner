@@ -92,16 +92,16 @@ export default function Overview() {
             <div className="inline-grid grid-cols-3">
                 {factoryOverview.map((factory) => (
                     <Fragment key={factory.id}>
-                        <div className="col-span-3 my-4">
+                        <div className="col-span-3 mb-4 mt-8">
                             <Title type="small">{factory.name}</Title>
                         </div>
                         {factory.modules.map((module) => (
                             <Fragment key={module.id}>
-                                <div className="border-b">
+                                <div className="border-b py-1">
                                     {legible(module.item)}
                                 </div>
-                                <div className="border-b">{module.count}</div>
-                                <div className="border-b">
+                                <div className="border-b py-1">{module.count}</div>
+                                <div className="border-b py-1">
                                     <ul>
                                         {module.input.map(([item, amount]) => (
                                             <li key={module.id + item}>

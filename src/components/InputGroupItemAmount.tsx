@@ -26,12 +26,12 @@ export default function InputGroupItemAmount({
     };
 
     return (
-        <>
+        <div className="flex gap-x-2">
             <SelectItem value={item} onChange={handleItemChange} />
             <InputAmount value={amount} onChange={onAmountChange} />
             <button onClick={onDelete} type="button">
                 &times;
             </button>
-        </>
+        </div>
     );
 }

@@ -106,7 +106,7 @@ function App() {
             }
         >
             <Title type="sub">Output</Title>
-            <form>
+            <form className="flex flex-col gap-y-2">
                 {activeFactory.output.map(([item, amount], index) => (
                     <div key={item}>
                         <InputGroupItemAmount
@@ -126,11 +126,11 @@ function App() {
                     <SelectItem value={null} onChange={handleAddOutput} />
                 </div>
             </form>
-            <hr className="my-4" />
+            <hr className="my-4 border-tertiary" />
             <Title type="sub">Modules</Title>
-            <form>
+            <form className="flex flex-col gap-y-6">
                 {activeFactory.modules.map((module) => (
-                    <div key={module.id}>
+                    <div key={module.id} className="flex flex-col gap-y-2">
                         <div>
                             <InputGroupItemAmount
                                 item={module.item}
@@ -158,7 +158,7 @@ function App() {
                         </div>
                         <div className="flex">
                             <span className="mr-2">Inputs</span>
-                            <div>
+                            <div className="flex flex-col gap-y-2">
                                 {module.input.map(([item, amount], index) => (
                                     <div key={`${module.id}-${index}`}>
                                         <InputGroupItemAmount

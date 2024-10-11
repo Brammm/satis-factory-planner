@@ -19,7 +19,7 @@ export default function SelectItem({ defaultItems, onChange, value }: Props) {
 
     return (
         <select
-            className="text-secondary"
+            className="bg-tertiary text-slate-100 py-1 rounded"
             onChange={handleChange}
             value={value || ''}
         >

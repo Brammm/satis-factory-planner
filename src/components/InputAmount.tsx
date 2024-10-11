@@ -16,7 +16,7 @@ export default function InputAmount({ onChange, value }: Props) {
             type="number"
             value={value}
             onChange={handleChange}
-            className="text-secondary"
+            className="bg-tertiary text-slate-100 rounded py-1 w-28 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
     );
 }
