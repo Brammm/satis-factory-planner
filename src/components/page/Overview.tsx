@@ -1,9 +1,9 @@
 import { Fragment } from 'react';
 import type { Item } from '../../hooks/item.ts';
 import { usePlanner } from '../../hooks/usePlanner.ts';
+import { legible } from '../../util';
 import Title from '../Title.tsx';
 import Layout from './Layout.tsx';
-import { legible } from '../../util';
 
 export default function Overview() {
     const { factories } = usePlanner();
@@ -51,7 +51,7 @@ export default function Overview() {
     const factoryOverview = factories.map((factory) => {
         const modules = factory.modules.map((module) => {
             const moduleCount = production[module.item] / module.amount;
-            
+
             return {
                 id: module.id,
                 item: module.item,
@@ -62,16 +62,21 @@ export default function Overview() {
                 ]),
             };
         });
-        
-        const baseInput = modules.reduce<Partial<Record<Item, number>>>((baseInput, module) => {
-            for (const [item, amount] of module.input) {
-                if (allModules.find((module) => module.item === item)) continue;
-                
-                baseInput[item as Item] = (baseInput[item as Item] || 0) + (amount as number);
-            }
-            
-            return baseInput;
-        }, {});
+
+        const baseInput = modules.reduce<Partial<Record<Item, number>>>(
+            (baseInput, module) => {
+                for (const [item, amount] of module.input) {
+                    if (factory.modules.find((module) => module.item === item))
+                        continue;
+
+                    baseInput[item as Item] =
+                        (baseInput[item as Item] || 0) + (amount as number);
+                }
+
+                return baseInput;
+            },
+            {},
+        );
 
         return {
             id: factory.id,
@@ -92,10 +97,10 @@ export default function Overview() {
                         </div>
                         {factory.modules.map((module) => (
                             <Fragment key={module.id}>
-                                <div className="border-b">{legible(module.item)}</div>
                                 <div className="border-b">
-                                    {module.count}
+                                    {legible(module.item)}
                                 </div>
+                                <div className="border-b">{module.count}</div>
                                 <div className="border-b">
                                     <ul>
                                         {module.input.map(([item, amount]) => (
@@ -110,9 +115,13 @@ export default function Overview() {
                         ))}
                         <span>Total input:</span>
                         <ul className="col-span-2">
-                            {Object.entries(factory.baseInput).map(([item, amount]) => (
-                                <li key={item}>{legible(item)}: {amount}</li>
-                            ))}
+                            {Object.entries(factory.baseInput).map(
+                                ([item, amount]) => (
+                                    <li key={item}>
+                                        {legible(item)}: {amount}
+                                    </li>
+                                ),
+                            )}
                         </ul>
                     </Fragment>
                 ))}

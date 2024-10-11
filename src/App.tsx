@@ -1,4 +1,4 @@
-import InputAmount from './components/InputAmount.tsx';
+import InputGroupItemAmount from './components/InputGroupItemAmount.tsx';
 import SelectItem from './components/SelectItem.tsx';
 import Title from './components/Title.tsx';
 import Layout from './components/page/Layout.tsx';
@@ -109,22 +109,17 @@ function App() {
             <form>
                 {activeFactory.output.map(([item, amount], index) => (
                     <div key={item}>
-                        <SelectItem
-                            value={item}
-                            onChange={(item) => handleItemChange(index, item)}
-                        />
-                        <InputAmount
-                            value={amount}
-                            onChange={(amount) =>
+                        <InputGroupItemAmount
+                            item={item}
+                            amount={amount}
+                            onItemChange={(item) =>
+                                handleItemChange(index, item)
+                            }
+                            onDelete={() => handleRemoveOutput(index)}
+                            onAmountChange={(amount) =>
                                 handleAmountChange(index, amount)
                             }
                         />
-                        <button
-                            onClick={() => handleRemoveOutput(index)}
-                            type="button"
-                        >
-                            &times;
-                        </button>
                     </div>
                 ))}
                 <div>
@@ -137,50 +132,39 @@ function App() {
                 {activeFactory.modules.map((module) => (
                     <div key={module.id}>
                         <div>
-                            <SelectItem
-                                defaultItems={availableModuleOutput}
-                                value={module.item}
-                                onChange={(item) => {
-                                    if (!item) return;
-
+                            <InputGroupItemAmount
+                                item={module.item}
+                                amount={module.amount}
+                                onItemChange={(item) =>
                                     changeModuleOutput(
                                         activeFactoryId,
                                         module.id,
                                         item,
                                         module.amount,
-                                    );
-                                }}
-                            />
-                            <InputAmount
-                                value={module.amount}
-                                onChange={(amount) => {
+                                    )
+                                }
+                                onDelete={() =>
+                                    deleteModule(activeFactoryId, module.id)
+                                }
+                                onAmountChange={(amount) =>
                                     changeModuleOutput(
                                         activeFactoryId,
                                         module.id,
                                         module.item,
                                         amount,
-                                    );
-                                }}
-                            />
-                            <button
-                                onClick={() =>
-                                    deleteModule(activeFactoryId, module.id)
+                                    )
                                 }
-                                type="button"
-                            >
-                                &times;
-                            </button>
+                            />
                         </div>
                         <div className="flex">
                             <span className="mr-2">Inputs</span>
                             <div>
                                 {module.input.map(([item, amount], index) => (
                                     <div key={`${module.id}-${index}`}>
-                                        <SelectItem
-                                            value={item}
-                                            onChange={(item) => {
-                                                if (!item) return;
-
+                                        <InputGroupItemAmount
+                                            item={item}
+                                            amount={amount}
+                                            onItemChange={(item) =>
                                                 changeModuleInput(
                                                     activeFactoryId,
                                                     module.id,
@@ -194,12 +178,19 @@ function App() {
                                                             ][1],
                                                         ],
                                                     ),
-                                                );
-                                            }}
-                                        />
-                                        <InputAmount
-                                            value={amount}
-                                            onChange={(amount) => {
+                                                )
+                                            }
+                                            onDelete={() =>
+                                                changeModuleInput(
+                                                    activeFactoryId,
+                                                    module.id,
+                                                    module.input.toSpliced(
+                                                        index,
+                                                        1,
+                                                    ),
+                                                )
+                                            }
+                                            onAmountChange={(amount) =>
                                                 changeModuleInput(
                                                     activeFactoryId,
                                                     module.id,
@@ -213,24 +204,9 @@ function App() {
                                                             amount,
                                                         ],
                                                     ),
-                                                );
-                                            }}
+                                                )
+                                            }
                                         />
-                                        <button
-                                            onClick={() => {
-                                                changeModuleInput(
-                                                    activeFactoryId,
-                                                    module.id,
-                                                    module.input.toSpliced(
-                                                        index,
-                                                        1,
-                                                    ),
-                                                );
-                                            }}
-                                            type="button"
-                                        >
-                                            &times;
-                                        </button>
                                     </div>
                                 ))}
                                 <div>
