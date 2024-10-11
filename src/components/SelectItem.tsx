@@ -1,6 +1,7 @@
 import type { ChangeEvent } from 'react';
 
 import { type Item, items } from '../hooks/item.ts';
+import { legible } from '../util';
 
 type Props = {
     defaultItems?: Item[];
@@ -25,7 +26,7 @@ export default function SelectItem({ defaultItems, onChange, value }: Props) {
             <option value="">-</option>
             {(defaultItems || items).map((item) => (
                 <option key={item} value={item}>
-                    {item}
+                    {legible(item)}
                 </option>
             ))}
         </select>

@@ -1,5 +1,6 @@
 import InputAmount from './components/InputAmount.tsx';
 import SelectItem from './components/SelectItem.tsx';
+import Title from './components/Title.tsx';
 import Layout from './components/page/Layout.tsx';
 import Overview from './components/page/Overview.tsx';
 import type { Item } from './hooks/item.ts';
@@ -91,7 +92,7 @@ function App() {
         <Layout
             header={
                 <>
-                    <h2 className="text-2xl">{activeFactory.name}</h2>
+                    <Title>{activeFactory.name}</Title>
                     <button onClick={handleRename} type="button">
                         rename
                     </button>
@@ -104,7 +105,7 @@ function App() {
                 </>
             }
         >
-            <h3>Output</h3>
+            <Title type="sub">Output</Title>
             <form>
                 {activeFactory.output.map(([item, amount], index) => (
                     <div key={item}>
@@ -131,7 +132,7 @@ function App() {
                 </div>
             </form>
             <hr className="my-4" />
-            <h3>Modules</h3>
+            <Title type="sub">Modules</Title>
             <form>
                 {activeFactory.modules.map((module) => (
                     <div key={module.id}>

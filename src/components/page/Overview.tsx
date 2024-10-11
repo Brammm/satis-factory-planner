@@ -1,7 +1,9 @@
 import { Fragment } from 'react';
 import type { Item } from '../../hooks/item.ts';
 import { usePlanner } from '../../hooks/usePlanner.ts';
+import Title from '../Title.tsx';
 import Layout from './Layout.tsx';
+import { legible } from '../../util';
 
 export default function Overview() {
     const { factories } = usePlanner();
@@ -47,15 +49,15 @@ export default function Overview() {
     }
 
     return (
-        <Layout header={<h2>Overview</h2>}>
-            <h3>Factory overview</h3>
+        <Layout header={<Title>Overview</Title>}>
+            <Title type="sub">Factory overview</Title>
             {factories.map((factory) => (
                 <Fragment key={factory.id}>
-                    <h4>{factory.name}</h4>
+                    <Title type="small">{factory.name}</Title>
                     <div className="grid grid-cols-3">
                         {factory.modules.map((module) => (
                             <Fragment key={module.id}>
-                                <div>{module.item}</div>
+                                <div>{legible(module.item)}</div>
                                 <div>
                                     {production[module.item] / module.amount}
                                 </div>
@@ -63,7 +65,7 @@ export default function Overview() {
                                     <ul>
                                         {module.input.map(([item, amount]) => (
                                             <li key={module.id + item}>
-                                                {item}:{' '}
+                                                {legible(item)}:{' '}
                                                 {(amount *
                                                     production[module.item]) /
                                                     module.amount}
@@ -76,11 +78,11 @@ export default function Overview() {
                     </div>
                 </Fragment>
             ))}
-            <h3>Total required production</h3>
+            <Title type="sub">Total required production</Title>
             <div className="grid grid-cols-2">
                 {Object.entries(production).map(([item, amount]) => (
                     <Fragment key={item}>
-                        <span key={`item-${item}`}>{item}</span>
+                        <span key={`item-${item}`}>{legible(item)}</span>
                         <span key={`amount-${item}`}>{amount}</span>
                     </Fragment>
                 ))}
