@@ -2,6 +2,7 @@ export const items = [
     'IRON_INGOT',
     'COPPER_INGOT',
     'CATERIUM_INGOT',
+    'STEEL_INGOT',
     'RAW_QUARTZ',
     'CONCRETE',
     'RUBBER',

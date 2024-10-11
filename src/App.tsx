@@ -8,8 +8,12 @@ function App() {
     const {
         activeFactoryId,
         addFactory,
+        addModuleToFactory,
         changeOutput,
+        changeModuleInput,
+        changeModuleOutput,
         deleteFactory,
+        deleteModule,
         factories,
         navigateToFactory,
         renameFactory,
@@ -64,6 +68,24 @@ function App() {
                 activeFactory.output[index][1],
             ]),
         );
+    };
+
+    const availableModuleOutput = [
+        ...new Set(
+            activeFactory.output
+                .map(([item]) => item)
+                .concat(
+                    activeFactory.modules.flatMap((module) =>
+                        module.input.map(([item]) => item),
+                    ),
+                ),
+        ),
+    ];
+
+    const handleAddModule = (item: Item | null) => {
+        if (!item) return;
+
+        addModuleToFactory(activeFactoryId, item);
     };
 
     return (
@@ -122,6 +144,141 @@ function App() {
                     ))}
                     <div>
                         <SelectItem value={null} onChange={handleAddOutput} />
+                    </div>
+                </form>
+                <hr className="my-4" />
+                <h3>Modules</h3>
+                <form>
+                    {activeFactory.modules.map((module) => (
+                        <div key={module.id}>
+                            <div>
+                                <SelectItem
+                                    defaultItems={availableModuleOutput}
+                                    value={module.item}
+                                    onChange={(item) => {
+                                        if (!item) return;
+
+                                        changeModuleOutput(
+                                            activeFactoryId,
+                                            module.id,
+                                            item,
+                                            module.amount,
+                                        );
+                                    }}
+                                />
+                                <InputAmount
+                                    value={module.amount}
+                                    onChange={(amount) => {
+                                        changeModuleOutput(
+                                            activeFactoryId,
+                                            module.id,
+                                            module.item,
+                                            amount,
+                                        );
+                                    }}
+                                />
+                                <button
+                                    onClick={() =>
+                                        deleteModule(activeFactoryId, module.id)
+                                    }
+                                    type="button"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+                            <div className="flex">
+                                <span className="mr-2">Inputs</span>
+                                <div>
+                                    {module.input.map(
+                                        ([item, amount], index) => (
+                                            <div key={`${module.id}-${index}`}>
+                                                <SelectItem
+                                                    value={item}
+                                                    onChange={(item) => {
+                                                        if (!item) return;
+
+                                                        changeModuleInput(
+                                                            activeFactoryId,
+                                                            module.id,
+                                                            module.input.toSpliced(
+                                                                index,
+                                                                1,
+                                                                [
+                                                                    item,
+                                                                    module
+                                                                        .input[
+                                                                        index
+                                                                    ][1],
+                                                                ],
+                                                            ),
+                                                        );
+                                                    }}
+                                                />
+                                                <InputAmount
+                                                    value={amount}
+                                                    onChange={(amount) => {
+                                                        changeModuleInput(
+                                                            activeFactoryId,
+                                                            module.id,
+                                                            module.input.toSpliced(
+                                                                index,
+                                                                1,
+                                                                [
+                                                                    module
+                                                                        .input[
+                                                                        index
+                                                                    ][0],
+                                                                    amount,
+                                                                ],
+                                                            ),
+                                                        );
+                                                    }}
+                                                />
+                                                <button
+                                                    onClick={() => {
+                                                        changeModuleInput(
+                                                            activeFactoryId,
+                                                            module.id,
+                                                            module.input.toSpliced(
+                                                                index,
+                                                                1,
+                                                            ),
+                                                        );
+                                                    }}
+                                                    type="button"
+                                                >
+                                                    &times;
+                                                </button>
+                                            </div>
+                                        ),
+                                    )}
+                                    <div>
+                                        <SelectItem
+                                            value={null}
+                                            onChange={(item) => {
+                                                if (!item) return;
+
+                                                changeModuleInput(
+                                                    activeFactoryId,
+                                                    module.id,
+                                                    [
+                                                        ...module.input,
+                                                        [item, 10],
+                                                    ],
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                    <div>
+                        <SelectItem
+                            defaultItems={availableModuleOutput}
+                            value={null}
+                            onChange={handleAddModule}
+                        />
                     </div>
                 </form>
             </div>
