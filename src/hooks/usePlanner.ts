@@ -33,11 +33,12 @@ type Module = {
 };
 
 type State = {
-    activeFactoryId: FactoryId;
+    activeFactoryId?: FactoryId;
     factories: Factory[];
 };
 
 type Actions = {
+    goToOverview: () => void;
     addFactory: () => void;
     navigateToFactory: (factoryId: FactoryId) => void;
     renameFactory: (factoryId: FactoryId, name: string) => void;
@@ -58,12 +59,10 @@ type Actions = {
     ) => void;
 };
 
-const defaultFactoryId = createFactoryId();
 const defaultState: State = {
-    activeFactoryId: defaultFactoryId,
     factories: [
         {
-            id: defaultFactoryId,
+            id: createFactoryId(),
             name: 'New Factory',
             output: [],
             modules: [],
@@ -101,6 +100,9 @@ export const usePlanner = create<State & Actions>()(
     persist(
         immer((set) => ({
             ...defaultState,
+            goToOverview: () => {
+                set({ activeFactoryId: undefined });
+            },
             addFactory: () => {
                 const newId = createFactoryId();
                 set((state) => {
@@ -132,7 +134,7 @@ export const usePlanner = create<State & Actions>()(
                     );
                     if (state.factories.length === 0) {
                         state.factories = defaultState.factories;
-                        state.activeFactoryId = defaultFactoryId;
+                        state.activeFactoryId = defaultState.factories[0].id;
                     }
                     if (factoryId === state.activeFactoryId) {
                         state.activeFactoryId = state.factories[0].id;
