@@ -57,6 +57,8 @@ type Actions = {
         moduleId: ModuleId,
         input: [Item, number][],
     ) => void;
+    moveModuleUp: (factoryId: FactoryId, moduleId: ModuleId) => void;
+    moveModuleDown: (factoryId: FactoryId, moduleId: ModuleId) => void;
 };
 
 const defaultState: State = {
@@ -184,6 +186,29 @@ export const usePlanner = create<State & Actions>()(
                     });
                 });
             },
+            moveModuleUp: (factoryId, moduleId) => {
+                set((state) => {
+                    onFactory(state.factories, factoryId, (factory) => {
+                        const index = factory.modules.findIndex(m => m.id === moduleId);
+                        if (index > 0) {
+                            // Swap with the previous module
+                            [factory.modules[index - 1], factory.modules[index]] =
+                                [factory.modules[index], factory.modules[index - 1]];
+                        }
+                    });
+                });
+            },
+            moveModuleDown: (factoryId, moduleId) => {
+                set((state) => {
+                    onFactory(state.factories, factoryId, (factory) => {
+                        const index = factory.modules.findIndex(m => m.id === moduleId);
+                        if (index < factory.modules.length - 1) {
+                            // Swap with the next module
+                            [factory.modules[index + 1], factory.modules[index]] =
+                                [factory.modules[index], factory.modules[index + 1]];
+                        }
+                    });
+                });},
         })),
         { name: 'satis-factory-planner', version: 1 },
     ),

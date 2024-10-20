@@ -16,6 +16,8 @@ function App() {
         deleteFactory,
         deleteModule,
         factories,
+        moveModuleUp,
+        moveModuleDown,
         renameFactory,
     } = usePlanner();
 
@@ -129,9 +131,35 @@ function App() {
             <hr className="my-4 border-tertiary" />
             <Title type="sub">Modules</Title>
             <form className="flex flex-col gap-y-6">
-                {activeFactory.modules.map((module) => (
+                {activeFactory.modules.map((module, index) => (
                     <div key={module.id} className="flex flex-col gap-y-2">
-                        <div>
+                        <div className="flex">
+                            <div className="flex flex-col mr-2">
+                                <button
+                                    disabled={index === 0}
+                                    type="button"
+                                    onClick={() =>
+                                        moveModuleUp(activeFactoryId, module.id)
+                                    }
+                                >
+                                    ↑
+                                </button>
+                                <button
+                                    disabled={
+                                        index ===
+                                        activeFactory.modules.length - 1
+                                    }
+                                    type="button"
+                                    onClick={() =>
+                                        moveModuleDown(
+                                            activeFactoryId,
+                                            module.id,
+                                        )
+                                    }
+                                >
+                                    ↓
+                                </button>
+                            </div>
                             <InputGroupItemAmount
                                 item={module.item}
                                 amount={module.amount}

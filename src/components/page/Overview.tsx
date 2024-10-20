@@ -100,7 +100,9 @@ export default function Overview() {
                                 <div className="border-b py-1">
                                     {legible(module.item)}
                                 </div>
-                                <div className="border-b py-1">{module.count}</div>
+                                <div className="border-b py-1">
+                                    {module.count}
+                                </div>
                                 <div className="border-b py-1">
                                     <ul>
                                         {module.input.map(([item, amount]) => (
