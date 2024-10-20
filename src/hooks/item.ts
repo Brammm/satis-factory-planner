@@ -3,9 +3,11 @@ export const items = [
     'COPPER_INGOT',
     'CATERIUM_INGOT',
     'STEEL_INGOT',
+    'ALUMINUM_INGOT',
     'RAW_QUARTZ',
     'CONCRETE',
     'RUBBER',
+    'PLASTIC ',
     'SMART_PLATING',
     'MODULAR_ENGINE',
     'VERSATILE_FRAMEWORK',
@@ -23,6 +25,8 @@ export const items = [
     'CIRCUIT_BOARD',
     'HIGH_SPEED_CONNECTOR',
     'COMPUTER',
+    'RADIO_CONTROL_UNIT',
+    'SUPERCOMPUTER',
 ] as const;
 
 export type Item = (typeof items)[number];
