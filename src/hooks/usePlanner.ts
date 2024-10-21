@@ -18,14 +18,14 @@ function createModuleId(): ModuleId {
     return ulid() as ModuleId;
 }
 
-type Factory = {
+export type Factory = {
     id: FactoryId;
     name: string;
     output: [Item, number][];
     modules: Module[];
 };
 
-type Module = {
+export type Module = {
     id: ModuleId;
     item: Item;
     amount: number;
@@ -189,11 +189,18 @@ export const usePlanner = create<State & Actions>()(
             moveModuleUp: (factoryId, moduleId) => {
                 set((state) => {
                     onFactory(state.factories, factoryId, (factory) => {
-                        const index = factory.modules.findIndex(m => m.id === moduleId);
+                        const index = factory.modules.findIndex(
+                            (m) => m.id === moduleId,
+                        );
                         if (index > 0) {
                             // Swap with the previous module
-                            [factory.modules[index - 1], factory.modules[index]] =
-                                [factory.modules[index], factory.modules[index - 1]];
+                            [
+                                factory.modules[index - 1],
+                                factory.modules[index],
+                            ] = [
+                                factory.modules[index],
+                                factory.modules[index - 1],
+                            ];
                         }
                     });
                 });
@@ -201,14 +208,22 @@ export const usePlanner = create<State & Actions>()(
             moveModuleDown: (factoryId, moduleId) => {
                 set((state) => {
                     onFactory(state.factories, factoryId, (factory) => {
-                        const index = factory.modules.findIndex(m => m.id === moduleId);
+                        const index = factory.modules.findIndex(
+                            (m) => m.id === moduleId,
+                        );
                         if (index < factory.modules.length - 1) {
                             // Swap with the next module
-                            [factory.modules[index + 1], factory.modules[index]] =
-                                [factory.modules[index], factory.modules[index + 1]];
+                            [
+                                factory.modules[index + 1],
+                                factory.modules[index],
+                            ] = [
+                                factory.modules[index],
+                                factory.modules[index + 1],
+                            ];
                         }
                     });
-                });},
+                });
+            },
         })),
         { name: 'satis-factory-planner', version: 1 },
     ),

@@ -1,6 +1,10 @@
 import { Fragment } from 'react';
 import type { Item } from '../../hooks/item.ts';
-import { usePlanner } from '../../hooks/usePlanner.ts';
+import {
+    type Factory,
+    type Module,
+    usePlanner,
+} from '../../hooks/usePlanner.ts';
 import { legible } from '../../util';
 import Title from '../Title.tsx';
 import Layout from './Layout.tsx';
@@ -12,12 +16,56 @@ export default function Overview() {
     const production = Object.fromEntries(
         factories.flatMap((factory) => factory.output),
     );
-    // Get all available modules
-    const allModules = factories.flatMap((factory) => factory.modules);
+
+    function calculateModuleWeight(factory: Factory) {
+        function findModuleProducingItem(factory: Factory, item: Item) {
+            return factory.modules.find((module) => module.item === item);
+        }
+
+        function getWeight(
+            module: Module,
+            factory: Factory,
+            visited = new Set(),
+        ) {
+            // Prevent infinite recursion in case of circular dependencies
+            if (visited.has(module)) {
+                return 0;
+            }
+
+            visited.add(module);
+
+            let weight = 0;
+
+            for (const [inputItem] of module.input) {
+                const producingModule = findModuleProducingItem(
+                    factory,
+                    inputItem,
+                );
+
+                if (producingModule) {
+                    weight += 1 + getWeight(producingModule, factory, visited);
+                }
+            }
+
+            return weight;
+        }
+
+        return factory.modules.map((module) => {
+            return {
+                ...module,
+                weight: getWeight(module, factory),
+            };
+        });
+    }
+
+    // Get all available modules sorted by "weight"
+    const allModules = factories.flatMap((factory) =>
+        calculateModuleWeight(factory).sort((a, b) => b.weight - a.weight),
+    );
 
     // Function that will try finding a module for the desired item,
     // calculates the required input and adds that input to the required production
-    const parseProduction = (item: Item, desiredAmount: number) => {
+    function parseProduction(item: Item, desiredAmount: number) {
         const module = allModules.find((module) => module.item === item);
         if (!module) return;
 
@@ -29,7 +77,7 @@ export default function Overview() {
 
             parseProduction(item, requiredAmount);
         }
-    };
+    }
 
     // Loop over initial production and recurse over it
     for (const [item, amount] of Object.entries(production)) {
@@ -37,8 +85,6 @@ export default function Overview() {
     }
 
     // Loop over modules and round up
-    // TODO: allModules should be ordered so the last modules of a factory
-    // that have the most dependencies are first in the array
     for (const module of allModules) {
         const difference =
             Math.ceil(production[module.item] / module.amount) * module.amount -
