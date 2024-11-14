@@ -4,5 +4,4 @@
 
 [] Icons  
 [] use fractions?  
-[] add total output per module  
-[] share link  
+[] add total output per module

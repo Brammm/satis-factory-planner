@@ -1,3 +1,4 @@
+import lzstring from 'lz-string-esm';
 import { ulid } from 'ulid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -59,6 +60,8 @@ type Actions = {
     ) => void;
     moveModuleUp: (factoryId: FactoryId, moduleId: ModuleId) => void;
     moveModuleDown: (factoryId: FactoryId, moduleId: ModuleId) => void;
+    getShareUrl: () => string;
+    importSharedState: (share: string) => void;
 };
 
 const defaultState: State = {
@@ -100,7 +103,7 @@ function onModule(
 
 export const usePlanner = create<State & Actions>()(
     persist(
-        immer((set) => ({
+        immer((set, get) => ({
             ...defaultState,
             goToOverview: () => {
                 set({ activeFactoryId: undefined });
@@ -224,7 +227,90 @@ export const usePlanner = create<State & Actions>()(
                     });
                 });
             },
+            getShareUrl: () => {
+                const compressedState = lzstring.compressToEncodedURIComponent(
+                    JSON.stringify(get().factories),
+                );
+
+                return `${window.location.origin}?share=${compressedState}`;
+            },
+            importSharedState: (share) => {
+                console.log(share);
+                const jsonString =
+                    lzstring.decompressFromEncodedURIComponent(share);
+                console.log(jsonString);
+                if (!jsonString) {
+                    return;
+                }
+                const factories = JSON.parse(jsonString);
+                console.log(factories);
+
+                if (!isArrayOfFactories(factories)) {
+                    console.log('failed');
+                    return;
+                }
+
+                set((state) => {
+                    for (const factory of factories) {
+                        if (
+                            state.factories.find(
+                                (existingFactory) =>
+                                    existingFactory.id === factory.id,
+                            )
+                        ) {
+                            continue;
+                        }
+                        state.factories.push(factory);
+                    }
+                });
+            },
         })),
         { name: 'satis-factory-planner', version: 1 },
     ),
 );
+
+const isArrayOfFactories = (value: unknown): value is Factory[] => {
+    if (!Array.isArray(value)) {
+        return false;
+    }
+
+    return value.every(
+        (item) =>
+            typeof item === 'object' &&
+            'id' in item &&
+            typeof item.id === 'string' &&
+            'name' in item &&
+            typeof item.name === 'string' &&
+            'output' in item &&
+            Array.isArray(item.output) &&
+            item.output.every(
+                (outputItem: unknown) =>
+                    Array.isArray(outputItem) &&
+                    outputItem.length === 2 &&
+                    typeof outputItem[0] === 'string' &&
+                    typeof outputItem[1] === 'number',
+            ) &&
+            'modules' in item &&
+            Array.isArray(item.modules) &&
+            item.modules.every(
+                (module: unknown) =>
+                    module &&
+                    typeof module === 'object' &&
+                    'id' in module &&
+                    typeof module.id === 'string' &&
+                    'item' in module &&
+                    typeof module.item === 'string' &&
+                    'amount' in module &&
+                    typeof module.amount === 'number' &&
+                    'input' in module &&
+                    Array.isArray(module.input) &&
+                    module.input.every(
+                        (inputItem: unknown) =>
+                            Array.isArray(inputItem) &&
+                            inputItem.length === 2 &&
+                            typeof inputItem[0] === 'string' &&
+                            typeof inputItem[1] === 'number',
+                    ),
+            ),
+    );
+};

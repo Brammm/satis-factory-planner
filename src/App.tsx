@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import InputGroupItemAmount from './components/InputGroupItemAmount.tsx';
 import SelectItem from './components/SelectItem.tsx';
 import Title from './components/Title.tsx';
@@ -19,11 +20,21 @@ function App() {
         moveModuleUp,
         moveModuleDown,
         renameFactory,
+        importSharedState,
     } = usePlanner();
 
     const activeFactory = factories.find(
         (factory) => factory.id === activeFactoryId,
     );
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const share = params.get('share');
+        if (share) {
+            window.location.replace(window.location.origin);
+            importSharedState(share);
+        }
+    }, [importSharedState]);
 
     if (!activeFactoryId || !activeFactory) {
         return <Overview />;

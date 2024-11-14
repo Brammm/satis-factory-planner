@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { usePlanner } from '../../hooks/usePlanner.ts';
 import { Nav, NavItem } from '../Nav.tsx';
+import ShareButton from '../ShareButton.tsx';
 
 type Props = {
     children: ReactNode;
@@ -22,19 +23,22 @@ export default function Layout({ children, header }: Props) {
                 <i>Satis</i>Factory Planner
             </h1>
             <Nav>
-                <NavItem active={!activeFactoryId} onClick={goToOverview}>
-                    Overview
-                </NavItem>
-                {factories.map((factory) => (
-                    <NavItem
-                        key={factory.id}
-                        active={factory.id === activeFactoryId}
-                        onClick={() => navigateToFactory(factory.id)}
-                    >
-                        {factory.name}
+                <div className="mr-auto flex">
+                    <NavItem active={!activeFactoryId} onClick={goToOverview}>
+                        Overview
                     </NavItem>
-                ))}
-                <NavItem onClick={addFactory}>Add new</NavItem>
+                    {factories.map((factory) => (
+                        <NavItem
+                            key={factory.id}
+                            active={factory.id === activeFactoryId}
+                            onClick={() => navigateToFactory(factory.id)}
+                        >
+                            {factory.name}
+                        </NavItem>
+                    ))}
+                    <NavItem onClick={addFactory}>Add new</NavItem>
+                </div>
+                <ShareButton />
             </Nav>
             <div className="bg-primary p-4 flex gap-x-2">{header}</div>
 
