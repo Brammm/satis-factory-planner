@@ -3,6 +3,6 @@
 ## Todos
 
 [] Icons  
-[] Better styling  
-[] Proper sorting of modules in factory  
-[] use fractions?
+[] use fractions?  
+[] add total output per module  
+[] share link  
