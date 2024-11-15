@@ -1,4 +1,4 @@
-import lzstring from 'lz-string-esm';
+import lzstring from 'lz-string';
 import { ulid } from 'ulid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
