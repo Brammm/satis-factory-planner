@@ -6,6 +6,7 @@ import Layout from './components/page/Layout.tsx';
 import Overview from './components/page/Overview.tsx';
 import type { Item } from './hooks/item.ts';
 import { usePlanner } from './hooks/usePlanner.ts';
+import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/16/solid';
 
 function App() {
     const {
@@ -145,7 +146,7 @@ function App() {
                 {activeFactory.modules.map((module, index) => (
                     <div key={module.id} className="flex flex-col gap-y-2">
                         <div className="flex">
-                            <div className="flex flex-col mr-2">
+                            <div className="flex flex-col mr-2 justify-between">
                                 <button
                                     disabled={index === 0}
                                     type="button"
@@ -153,7 +154,7 @@ function App() {
                                         moveModuleUp(activeFactoryId, module.id)
                                     }
                                 >
-                                    ↑
+                                    <ArrowUpIcon className="size-4 text-white"/>
                                 </button>
                                 <button
                                     disabled={
@@ -168,7 +169,7 @@ function App() {
                                         )
                                     }
                                 >
-                                    ↓
+                                    <ArrowDownIcon className="size-4 text-white"/>
                                 </button>
                             </div>
                             <InputGroupItemAmount
